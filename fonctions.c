@@ -6,16 +6,7 @@
 
 #define MAX_LENGTH 100
 
-
-int calcul(int a, int b){
-	Node c;
-	c.value = 5;
-	printf("%d\n",c.value);
-	return a + b;
-
-}
-
-Node* init_nodes(Node* Nodes, int NumberNodes){
+Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 	int i;
 
 	//Allocation of Nodes
@@ -39,7 +30,7 @@ Node* init_nodes(Node* Nodes, int NumberNodes){
 	int node2;
 
 	//open file in reading mode
-	file = fopen("email-Eu-core.txt", "r");
+	file = fopen(fileName, "r");
 
 	//check for any error while opening file
 	if(!file){
@@ -64,7 +55,7 @@ Node* init_nodes(Node* Nodes, int NumberNodes){
 			Nodes[node1].outputs = (int*) realloc(Nodes[node1].outputs, sizeof(int)*Nodes[node1].maxOutputs);
 		}
 
-		Nodes[node1].outputs[Nodes[node1].inputsNumber] = node2;
+		Nodes[node1].outputs[Nodes[node1].outputsNumber] = node2;
 		//increment number of output from node1
 		Nodes[node1].outputsNumber = Nodes[node1].outputsNumber + 1;
 	}
@@ -72,4 +63,63 @@ Node* init_nodes(Node* Nodes, int NumberNodes){
 	fclose(file);
 
 	return Nodes;
+}
+
+float** init_matrice(float** M, int NumberNodes, Node* Nodes){
+
+	//Allocation
+	M = (float**) malloc(sizeof(float*)*NumberNodes);
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		M[i]= (float*) malloc(sizeof(float)*NumberNodes);
+	}
+
+	//Init M at 0
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		for (int j = 0; j < NumberNodes; j++)
+		{
+			M[i][j]=0;
+		}
+	}
+
+	//For each Nodes
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		//Examine each outputs
+		for (int j = 0; j < Nodes[i].outputsNumber; j++)
+		{
+			M[Nodes[i].outputs[j]][i]=(float)1/(Nodes[i].outputsNumber);
+		}
+	}
+	
+	return M;
+}
+
+//Utils
+
+void print_outputs(Node* Nodes, int NumberNodes){
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		printf("Node %d: ",i);
+		//Examine each outputs
+		for (int j = 0; j < Nodes[i].outputsNumber; j++)
+		{
+			printf("%d | ",Nodes[i].outputs[j] );
+		}
+		printf("\n");
+	}
+}
+
+void print_matrice(float** M, int NumberNodes){
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		for (int j = 0; j < NumberNodes; j++)
+		{
+			printf("%.3f | ",M[i][j] );
+		}
+		printf("\n");
+	}
 }

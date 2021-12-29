@@ -17,7 +17,10 @@ struct Node
 
 
 /** PROTOTYPES **/
-int calcul(int a, int b);
-Node* init_nodes(Node* Nodes, int NumberNodes);
+Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName);
+float** init_matrice(float** M, int NumberNodes, Node* Nodes);
+void print_outputs(Node* Nodes, int NumberNodes);
+void print_matrice(float** M, int NumberNodes);
+
 
 #endif

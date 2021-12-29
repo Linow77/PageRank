@@ -5,20 +5,21 @@
 
 int main(int argc, char const *argv[])
 {
-	printf("%s\n","Lancement du programme PageRank" );
+	printf("%s\n","**** Lancement du programme PageRank ****" );
+
 	int NumberNodes = 1005;
-	int end = 5;
+	char* fileName = "email-Eu-core.txt";
+
 	printf("%s\n","Lecture des données et création du graphe");
 	Node* Nodes = NULL;
-	Nodes = init_nodes(Nodes,NumberNodes);
-
-	printf("Number of outputs of node 4 : %d\n",Nodes[4].outputsNumber);
+	Nodes = init_nodes(Nodes,NumberNodes,fileName);
 
 	printf("%s\n","Création de la matrice M");
-	
-	//int** M = init_matrice();
+	float** M = NULL;
+	M = init_matrice(M, NumberNodes, Nodes);
+
+	//Free
 
 
-	//Free 
 	return 0;
 }
