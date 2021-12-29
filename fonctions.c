@@ -97,6 +97,65 @@ float** init_matrice(float** M, int NumberNodes, Node* Nodes){
 	return M;
 }
 
+float* init_vector(float* R, int NumberNodes){
+	R = (float*) malloc(sizeof(float)* NumberNodes);
+
+	//At the beginning, each node has probability 1/N to be chosen
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		R[i] = (float)1/NumberNodes;
+	}
+
+	return R;
+
+}
+
+float* calculate_vector(float** M,float* R,int NumberNodes,float dampingFactor){
+
+	
+
+	/** Power method **/
+	//R = P1 + P2
+	//R = dMR + ((1-d)/N)V1 	where d is the damping factor
+
+	//Calculate P1 = dMR
+	float* P1 = NULL;
+	P1 = (float*) malloc(sizeof(float)*NumberNodes);
+	//P1=MR
+	P1 = calculate_matrix_vector(M,R, NumberNodes);
+	//P1=dMR
+	P1 = calculate_vector_number(P1,dampingFactor,NumberNodes);
+
+
+	//Calculate P2 = ((1-d)/N)V1 = p3V1
+	//V1 is the vector with only ones so P2 is the vector with only p3
+
+	float p3= (1-dampingFactor)/NumberNodes;
+
+	float* P2 = NULL;
+	P2 = (float*) malloc(sizeof(float)*NumberNodes);
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		P2[i] = p3;
+	}
+
+	printf("P1/\n");
+	print_R(P1,NumberNodes);
+
+	printf("P2/\n");
+	print_R(P2,NumberNodes);
+
+	//Calculate R
+
+	R=addition_vector(P1,P2,NumberNodes);
+
+	
+	return R;
+
+}
+
+
 //Utils
 
 void print_outputs(Node* Nodes, int NumberNodes){
@@ -122,4 +181,51 @@ void print_matrice(float** M, int NumberNodes){
 		}
 		printf("\n");
 	}
+}
+
+void print_R(float* R, int NumberNodes){
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		printf("%.3f\n", R[i]);
+	}
+}
+
+float* calculate_matrix_vector(float** Matrix, float* Vector, int NumberNodes){
+
+	float* Result= NULL;
+	Result = (float*) malloc(sizeof(float)*NumberNodes);
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		Result[i]=0;
+
+		for (int j = 0; j < NumberNodes; j++)
+		{
+			Result[i]+= Matrix[i][j]*Vector[j];			
+		}
+	}
+
+	return Result;
+
+}
+
+float* addition_vector(float* Vector1, float* Vector2, int NumberNodes){
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		Vector1[i] = Vector1[i] + Vector2[i];
+	}
+
+	return Vector1;
+}
+
+float* calculate_vector_number(float* Vector, float Number, int NumberNodes){
+	
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		Vector[i] = Vector[i]*Number;
+	}
+
+	return Vector;
 }
