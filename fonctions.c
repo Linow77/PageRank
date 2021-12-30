@@ -139,12 +139,14 @@ float* calculate_vector(float** M,float* R,int NumberNodes,float dampingFactor){
 	{
 		P2[i] = p3;
 	}
-
+	
+	/*
 	printf("P1/\n");
 	print_R(P1,NumberNodes);
 
 	printf("P2/\n");
 	print_R(P2,NumberNodes);
+	*/
 
 	//Calculate R
 
