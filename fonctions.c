@@ -29,12 +29,18 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 	int node1;
 	int node2;
 
+	//adding .txt to fileName
+	char data[strlen(fileName)+4];
+	strcpy(data,fileName);
+	strcat(data,".txt");
+
 	//open file in reading mode
-	file = fopen(fileName, "r");
+	file = fopen(data, "r");
 
 	//check for any error while opening file
 	if(!file){
 		printf("%s\n","Impossible d'ouvrir le fichier" );
+		return Nodes;
 	}
 
 	//get the first line of the file
@@ -112,8 +118,6 @@ float* init_vector(float* R, int NumberNodes){
 
 float* calculate_vector(float** M,float* R,int NumberNodes,float dampingFactor){
 
-	
-
 	/** Power method **/
 	//R = P1 + P2
 	//R = dMR + ((1-d)/N)V1 	where d is the damping factor
@@ -139,22 +143,12 @@ float* calculate_vector(float** M,float* R,int NumberNodes,float dampingFactor){
 	{
 		P2[i] = p3;
 	}
-	
-	/*
-	printf("P1/\n");
-	print_R(P1,NumberNodes);
-
-	printf("P2/\n");
-	print_R(P2,NumberNodes);
-	*/
 
 	//Calculate R
 
 	R=addition_vector(P1,P2,NumberNodes);
-
 	
 	return R;
-
 }
 
 
@@ -185,9 +179,9 @@ void print_matrice(float** M, int NumberNodes){
 	}
 }
 
-void print_R(float* R, int NumberNodes){
+void print_Vector(float* R, int NumberOfLine){
 
-	for (int i = 0; i < NumberNodes; i++)
+	for (int i = 0; i < NumberOfLine; i++)
 	{
 		printf("%.3f\n", R[i]);
 	}
