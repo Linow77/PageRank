@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
 	float dampingFactor = atof(argv[3]);
 	int count = atoi(argv[4]);
 
-	printf("node:%d, factor:%f, count:%d\n",NumberNodes,dampingFactor,count);
+	printf("Noeuds:%d, Damping Factor:%.2f, Itérations:%d\n",NumberNodes,dampingFactor,count);
 
 	printf("%s\n","Lecture des données et création du graphe");
 	Node* Nodes = NULL;
@@ -79,5 +79,6 @@ int main(int argc, char const *argv[])
 
 	//print_Vector(R,NumberNodes);
 
+	printf("%s%s\n","Les résultats sont dans le fichier: ",resultsFileName );
 	return 0;
 }

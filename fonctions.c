@@ -113,7 +113,6 @@ float* init_vector(float* R, int NumberNodes){
 	}
 
 	return R;
-
 }
 
 float* calculate_vector(float** M,float* R,int NumberNodes,float dampingFactor){
@@ -203,7 +202,6 @@ float* calculate_matrix_vector(float** Matrix, float* Vector, int NumberNodes){
 	}
 
 	return Result;
-
 }
 
 float* addition_vector(float* Vector1, float* Vector2, int NumberNodes){
