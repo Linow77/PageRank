@@ -19,17 +19,21 @@ struct Node
 /** PROTOTYPES **/
 //functions
 Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName);
-float** init_matrice(float** M, int NumberNodes, Node* Nodes);
-float* init_vector(float* R, int NumberNodes);
-float* calculate_vector(float** M,float* R,int NumberNodes, float dampingFactor);
+double** init_matrice(double** M, int NumberNodes, Node* Nodes);
+double* init_vector(double* R, int NumberNodes);
+void calculate_vector(double** M,double* R,int NumberNodes, double dampingFactor);
 
 
 //utils
 void print_outputs(Node* Nodes, int NumberNodes);
-void print_matrice(float** M, int NumberNodes);
-void print_Vector(float* R, int NumberOfLine);
-float* calculate_matrix_vector(float** Matrix, float* Vector, int NumberNodes);
-float* addition_vector(float* Vector1, float* Vector2, int NumberNodes);
-float* calculate_vector_number(float* Vector, float Number, int NumberNodes);
+void print_matrice(double** M, int NumberNodes);
+void print_Vector(double* R, int NumberOfLine);
+double* calculate_matrix_vector(double** Matrix, double* Vector, int NumberNodes);
+void addition_vector(double* Vector1, double* Vector2, int NumberNodes);
+void calculate_vector_number(double* Vector, double Number, int NumberNodes);
+
+//free
+void free_nodes(Node* Nodes, int NumberNodes);
+void free_matrix(double** M, int NumberNodes);
 
 #endif

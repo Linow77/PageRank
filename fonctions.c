@@ -71,14 +71,14 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 	return Nodes;
 }
 
-float** init_matrice(float** M, int NumberNodes, Node* Nodes){
+double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 
 	//Allocation
-	M = (float**) malloc(sizeof(float*)*NumberNodes);
+	M = (double**) malloc(sizeof(double*)*NumberNodes);
 
 	for (int i = 0; i < NumberNodes; i++)
 	{
-		M[i]= (float*) malloc(sizeof(float)*NumberNodes);
+		M[i]= (double*) malloc(sizeof(double)*NumberNodes);
 	}
 
 	//Init M at 0
@@ -96,63 +96,67 @@ float** init_matrice(float** M, int NumberNodes, Node* Nodes){
 		//Examine each outputs
 		for (int j = 0; j < Nodes[i].outputsNumber; j++)
 		{
-			M[Nodes[i].outputs[j]][i]=(float)1/(Nodes[i].outputsNumber);
+			M[Nodes[i].outputs[j]][i]=(double)1/(Nodes[i].outputsNumber);
 		}
 	}
 	
 	return M;
 }
 
-float* init_vector(float* R, int NumberNodes){
-	R = (float*) malloc(sizeof(float)* NumberNodes);
+double* init_vector(double* R, int NumberNodes){
+	R = (double*) malloc(sizeof(double)* NumberNodes);
 
 	//At the beginning, each node has probability 1/N to be chosen
 	for (int i = 0; i < NumberNodes; i++)
 	{
-		R[i] = (float)1/NumberNodes;
+		R[i] = (double)1/NumberNodes;
 	}
 
 	return R;
 }
 
-float* calculate_vector(float** M,float* R,int NumberNodes,float dampingFactor){
+void calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor){
 
 	/** Power method **/
 	//R = P1 + P2
 	//R = dMR + ((1-d)/N)V1 	where d is the damping factor
 
 	//Calculate P1 = dMR
-	float* P1 = NULL;
-	P1 = (float*) malloc(sizeof(float)*NumberNodes);
+	double* P1 = NULL;
 	//P1=MR
 	P1 = calculate_matrix_vector(M,R, NumberNodes);
 	//P1=dMR
-	P1 = calculate_vector_number(P1,dampingFactor,NumberNodes);
-
+	calculate_vector_number(P1,dampingFactor,NumberNodes);
 
 	//Calculate P2 = ((1-d)/N)V1 = p3V1
 	//V1 is the vector with only ones so P2 is the vector with only p3
 
-	float p3= (1-dampingFactor)/NumberNodes;
+	double p3= (double)(1-dampingFactor)/(double)NumberNodes;
 
-	float* P2 = NULL;
-	P2 = (float*) malloc(sizeof(float)*NumberNodes);
+	double* P2 = NULL;
+	P2 = (double*) malloc(sizeof(double)*NumberNodes);
 
 	for (int i = 0; i < NumberNodes; i++)
 	{
 		P2[i] = p3;
 	}
 
-	//Calculate R
+	//Calculate Result
+	addition_vector(P1,P2,NumberNodes);
 
-	R=addition_vector(P1,P2,NumberNodes);
-	
-	return R;
+	//Store result in R
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		R[i]= P1[i];
+	}
+
+	//free temp
+	free(P1);
+	free(P2);
 }
 
 
 //Utils
-
 void print_outputs(Node* Nodes, int NumberNodes){
 
 	for (int i = 0; i < NumberNodes; i++)
@@ -167,7 +171,7 @@ void print_outputs(Node* Nodes, int NumberNodes){
 	}
 }
 
-void print_matrice(float** M, int NumberNodes){
+void print_matrice(double** M, int NumberNodes){
 	for (int i = 0; i < NumberNodes; i++)
 	{
 		for (int j = 0; j < NumberNodes; j++)
@@ -178,7 +182,7 @@ void print_matrice(float** M, int NumberNodes){
 	}
 }
 
-void print_Vector(float* R, int NumberOfLine){
+void print_Vector(double* R, int NumberOfLine){
 
 	for (int i = 0; i < NumberOfLine; i++)
 	{
@@ -186,10 +190,10 @@ void print_Vector(float* R, int NumberOfLine){
 	}
 }
 
-float* calculate_matrix_vector(float** Matrix, float* Vector, int NumberNodes){
+double* calculate_matrix_vector(double** Matrix, double* Vector, int NumberNodes){
 
-	float* Result= NULL;
-	Result = (float*) malloc(sizeof(float)*NumberNodes);
+	double* Result= NULL;
+	Result = (double*) malloc(sizeof(double)*NumberNodes);
 
 	for (int i = 0; i < NumberNodes; i++)
 	{
@@ -204,22 +208,39 @@ float* calculate_matrix_vector(float** Matrix, float* Vector, int NumberNodes){
 	return Result;
 }
 
-float* addition_vector(float* Vector1, float* Vector2, int NumberNodes){
+void addition_vector(double* Vector1, double* Vector2, int NumberNodes){
 
 	for (int i = 0; i < NumberNodes; i++)
 	{
 		Vector1[i] = Vector1[i] + Vector2[i];
 	}
-
-	return Vector1;
 }
 
-float* calculate_vector_number(float* Vector, float Number, int NumberNodes){
+void calculate_vector_number(double* Vector, double Number, int NumberNodes){
 	
 	for (int i = 0; i < NumberNodes; i++)
 	{
 		Vector[i] = Vector[i]*Number;
 	}
 
-	return Vector;
+}
+
+//free functions
+void free_nodes(Node* Nodes, int NumberNodes){
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		//free int tab
+		free(Nodes[i].outputs);
+	}
+	free(Nodes);
+
+}
+
+void free_matrix(double** M, int NumberNodes){
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		free(M[i]);
+	}
+	free(M);
 }

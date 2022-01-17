@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
 	int NumberNodes = atoi(argv[2]);
 	char* fileName = (char*)argv[1];
 
-	float dampingFactor = atof(argv[3]);
+	double dampingFactor = atof(argv[3]);
 	int count = atoi(argv[4]);
 
 	printf("Noeuds:%d, Damping Factor:%.2f, Itérations:%d\n",NumberNodes,dampingFactor,count);
@@ -35,11 +35,11 @@ int main(int argc, char const *argv[])
 	Nodes = init_nodes(Nodes,NumberNodes,fileName);
 
 	printf("%s\n","Création de la matrice M");
-	float** M = NULL;
+	double** M = NULL;
 	M = init_matrice(M, NumberNodes, Nodes);
 
 	printf("%s\n", "Création du vecteur de probabilité R");
-	float* R = NULL;
+	double* R = NULL;
 	R = init_vector(R, NumberNodes);
 
 	//print_Vector(R,NumberNodes);
@@ -48,7 +48,7 @@ int main(int argc, char const *argv[])
 	
 	for (int i = 0; i < count; ++i)
 	{
-		R = calculate_vector(M,R,NumberNodes,dampingFactor);
+		calculate_vector(M,R,NumberNodes,dampingFactor);
 	}
 	
 	//Save the results in file
@@ -69,7 +69,7 @@ int main(int argc, char const *argv[])
 	char temp[50] = "";
 	for (int i = 0; i < NumberNodes; i++)
 	{
-		sprintf(temp,"%f",R[i]);
+		sprintf(temp,"%.20f",R[i]);
 		fputs(temp,resultFile);
 		fputs("\n",resultFile);
 
@@ -80,5 +80,14 @@ int main(int argc, char const *argv[])
 	//print_Vector(R,NumberNodes);
 
 	printf("%s%s\n","Les résultats sont dans le fichier: ",resultsFileName );
+	printf("valeur:%.20f\n",R[0] );
+
+	//free
+	//nodes
+	free_nodes(Nodes,NumberNodes);
+	//M
+	free_matrix(M,NumberNodes);
+	//R
+	free(R);
 	return 0;
 }
