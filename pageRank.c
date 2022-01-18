@@ -17,7 +17,6 @@ int main(int argc, char const *argv[])
 		printf("%s","You need to specify :\n1)Name of the data file (without .txt)\n2)Number of nodes\n3)Value of the damping factor\n4)Number of iterions for the algorithm\n");
 		printf("%s\n","Example : ./executable test 4 0.85 10" );
 		return 0;
-
 	}
 
 	printf("%s\n","**** Lancement du programme PageRank ****" );
@@ -71,7 +70,7 @@ int main(int argc, char const *argv[])
 	char temp[50] = "";
 	for (int i = 0; i < NumberNodes; i++)
 	{
-		sprintf(temp,"%.20f",R[i]);
+		sprintf(temp,"%.10f",R[i]);
 		fputs(temp,resultFile);
 		fputs("\n",resultFile);
 

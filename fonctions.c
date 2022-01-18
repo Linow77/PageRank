@@ -22,7 +22,7 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 	//Get data from file and transfer them to Nodes
 	FILE* file = NULL;
 	char string[MAX_LENGTH] = "";
-	char delimiter[] = " ";
+	char delimiter[] = " \t";
 	char* part1 = "";
 	char* part2 = "";
 	int node1;
@@ -95,7 +95,7 @@ double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 		//Examine each outputs
 		for (int j = 0; j < Nodes[i].outputsNumber; j++)
 		{
-			M[Nodes[i].outputs[j]][i]=(double)1/(Nodes[i].outputsNumber);
+			M[Nodes[i].outputs[j]][i]=1.0/(Nodes[i].outputsNumber);
 		}
 	}
 	
@@ -108,7 +108,7 @@ double* init_vector(double* R, int NumberNodes){
 	//At the beginning, each node has probability 1/N to be chosen
 	for (int i = 0; i < NumberNodes; i++)
 	{
-		R[i] = (double)1/NumberNodes;
+		R[i] = 1.0/NumberNodes;
 	}
 
 	return R;
@@ -130,7 +130,7 @@ void calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor)
 	//Calculate P2 = ((1-d)/N)V1 = p3V1
 	//V1 is the vector with only ones so P2 is the vector with only p3
 
-	double p3= (double)(1-dampingFactor)/(double)NumberNodes;
+	double p3= (double)(1.0-dampingFactor)/(double)NumberNodes;
 
 	double* P2 = NULL;
 	P2 = (double*) malloc(sizeof(double)*NumberNodes);
@@ -138,7 +138,7 @@ void calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor)
 	for (int i = 0; i < NumberNodes; i++)
 	{
 		P2[i] = p3;
-	}
+	}	
 
 	//Calculate Result
 	addition_vector(P1,P2,NumberNodes);
