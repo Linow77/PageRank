@@ -13,7 +13,6 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 	Nodes = (Node*) malloc(sizeof(Node)*NumberNodes);
 	
 	for(i=0;i<NumberNodes;i++){
-		Nodes[i].inputsNumber = 0;
 		Nodes[i].outputsNumber = 0;
 		Nodes[i].maxOutputs = 25;
 		Nodes[i].outputs = (int*) malloc(sizeof(int)*Nodes[i].maxOutputs);	
@@ -55,7 +54,7 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 
 		//add outputs in node1
 		//check if outputs is full
-		if(Nodes[node1].inputsNumber == Nodes[node1].maxOutputs ) {
+		if(Nodes[node1].outputsNumber == Nodes[node1].maxOutputs ) {
 			//realloc outputs
 			Nodes[node1].maxOutputs += 25;
 			Nodes[node1].outputs = (int*) realloc(Nodes[node1].outputs, sizeof(int)*Nodes[node1].maxOutputs);

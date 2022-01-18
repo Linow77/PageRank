@@ -26,9 +26,9 @@ int main(int argc, char const *argv[])
 	char* fileName = (char*)argv[1];
 
 	double dampingFactor = atof(argv[3]);
-	int count = atoi(argv[4]);
+	int nbIteration = atoi(argv[4]);
 
-	printf("Noeuds:%d, Damping Factor:%.2f, Itérations:%d\n",NumberNodes,dampingFactor,count);
+	printf("Noeuds:%d, Damping Factor:%.2f, Itérations:%d\n",NumberNodes,dampingFactor,nbIteration);
 
 	printf("%s\n","Lecture des données et création du graphe");
 	Node* Nodes = NULL;
@@ -46,10 +46,12 @@ int main(int argc, char const *argv[])
 
 	printf("%s\n", "Calcul du vecteur de probabilité R");
 	
-	for (int i = 0; i < count; ++i)
+	for (int i = 0; i < nbIteration; ++i)
 	{
 		calculate_vector(M,R,NumberNodes,dampingFactor);
 	}
+
+	printf("%s\n", "Sauvegarde des résultats dans le fichier de sortie");
 	
 	//Save the results in file
 	FILE* resultFile = NULL;
@@ -80,7 +82,6 @@ int main(int argc, char const *argv[])
 	//print_Vector(R,NumberNodes);
 
 	printf("%s%s\n","Les résultats sont dans le fichier: ",resultsFileName );
-	printf("valeur:%.20f\n",R[0] );
 
 	//free
 	//nodes

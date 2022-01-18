@@ -6,13 +6,9 @@
 typedef struct Node Node;
 struct Node 
 {
-
-	int value;
-	int inputsNumber;
-	int outputsNumber; //default value of 25
-	int maxOutputs;
+	int outputsNumber; 
+	int maxOutputs;	//default value of 25
 	int* outputs;
-
 };
 
 
