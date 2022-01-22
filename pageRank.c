@@ -13,9 +13,9 @@
 int main(int argc, char const *argv[])
 {
 	//Check Variables
-	if(argc < 5){
-		printf("%s","You need to specify :\n1)Name of the data file (without .txt)\n2)Number of nodes\n3)Value of the damping factor\n4)Number of iterions for the algorithm\n");
-		printf("%s\n","Example : ./executable test 4 0.85 10" );
+	if(argc < 6){
+		printf("%s","You need to specify :\n1)Name of the data file (without .txt)\n2)Number of nodes\n3)Value of the damping factor\n4)Value of Epsilon\n5)Number of iterions for the algorithm\n");
+		printf("%s\n","Example : ./executable test 4 0.85 0.0001 10" );
 		return 0;
 	}
 
@@ -23,11 +23,11 @@ int main(int argc, char const *argv[])
 
 	int NumberNodes = atoi(argv[2]);
 	char* fileName = (char*)argv[1];
-
 	double dampingFactor = atof(argv[3]);
-	int nbIteration = atoi(argv[4]);
+	float epsilon = atof(argv[4]);
+	int nbIteration = atoi(argv[5]);
 
-	printf("Noeuds:%d, Damping Factor:%.2f, Itérations:%d\n",NumberNodes,dampingFactor,nbIteration);
+	printf("Noeuds:%d, Damping Factor:%.2f, Epsilon:%.10f, Itérations:%d\n",NumberNodes,dampingFactor,epsilon,nbIteration);
 
 	printf("%s\n","Lecture des données et création du graphe");
 	Node* Nodes = NULL;
@@ -44,10 +44,12 @@ int main(int argc, char const *argv[])
 	//print_Vector(R,NumberNodes);
 
 	printf("%s\n", "Calcul du vecteur de probabilité R");
-	
-	for (int i = 0; i < nbIteration; ++i)
-	{
-		calculate_vector(M,R,NumberNodes,dampingFactor);
+
+	int i = 0, finished=0;
+
+	while( i< nbIteration && finished == 0){
+		finished = calculate_vector(M,R,NumberNodes,dampingFactor, epsilon);
+		i+=1;
 	}
 
 	printf("%s\n", "Sauvegarde des résultats dans le fichier de sortie");

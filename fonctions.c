@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "fonctions.h"
 
@@ -114,7 +115,7 @@ double* init_vector(double* R, int NumberNodes){
 	return R;
 }
 
-void calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor){
+int calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor, float epsilon){
 
 	/** Power method **/
 	//R = P1 + P2
@@ -143,6 +144,16 @@ void calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor)
 	//Calculate Result
 	addition_vector(P1,P2,NumberNodes);
 
+	//Check if precision epsilon is good
+	int finished = 1;
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		//If one component of the vector is not precised enough, continue to iterate
+		if(fabs(P1[i]-R[i]) > (double)epsilon){
+			finished = 0;
+		}
+	}
+
 	//Store result in R
 	for (int i = 0; i < NumberNodes; i++)
 	{
@@ -152,6 +163,8 @@ void calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor)
 	//free temp
 	free(P1);
 	free(P2);
+
+	return finished;
 }
 
 

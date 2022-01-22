@@ -17,7 +17,7 @@ struct Node
 Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName);
 double** init_matrice(double** M, int NumberNodes, Node* Nodes);
 double* init_vector(double* R, int NumberNodes);
-void calculate_vector(double** M,double* R,int NumberNodes, double dampingFactor);
+int calculate_vector(double** M,double* R,int NumberNodes, double dampingFactor, float epsilon);
 
 
 //utils
