@@ -13,25 +13,31 @@
 int main(int argc, char const *argv[])
 {
 	//Check Variables
-	if(argc < 6){
-		printf("%s","You need to specify :\n1)Name of the data file (without .txt)\n2)Number of nodes\n3)Value of the damping factor\n4)Value of Epsilon\n5)Number of iterions for the algorithm\n");
-		printf("%s\n","Example : ./executable test 4 0.85 0.0001 10" );
+	if(argc < 5){
+		printf("%s","You need to specify :\n1)Name of the data file (without .txt)\n2)Value of the damping factor\n3)Value of Epsilon\n4)Number of iterions for the algorithm\n");
+		printf("%s\n","Example : ./executable test 0.85 0.0001 10" );
 		return 0;
 	}
 
 	printf("%s\n","**** Lancement du programme PageRank ****" );
 
-	int NumberNodes = atoi(argv[2]);
 	char* fileName = (char*)argv[1];
-	double dampingFactor = atof(argv[3]);
-	float epsilon = atof(argv[4]);
-	int nbIteration = atoi(argv[5]);
+	double dampingFactor = atof(argv[2]);
+	float epsilon = atof(argv[3]);
+	int nbIteration = atoi(argv[4]);
 
-	printf("Noeuds:%d, Damping Factor:%.2f, Epsilon:%.10f, Itérations:%d\n",NumberNodes,dampingFactor,epsilon,nbIteration);
+	printf("Damping Factor:%.2f, Epsilon:%.5f, Itérations:%d\n",dampingFactor,epsilon,nbIteration);
 
+	printf("%s\n","Lecture des données et formatage");
+	int* notUsedNode = NULL;
+	notUsedNode = (int*) malloc(sizeof(int)* ADDITIONAL_NODE);
+	int notUsedcount = 0;
+	int NumberNodes = 0;
+
+	notUsedcount = format_data_file(fileName,notUsedNode,&NumberNodes);
 	printf("%s\n","Lecture des données et création du graphe");
 	Node* Nodes = NULL;
-	Nodes = init_nodes(Nodes,NumberNodes,fileName);
+	Nodes = init_nodes(Nodes,NumberNodes,fileName,notUsedNode,notUsedcount);
 
 	printf("%s\n","Création de la matrice M");
 	double** M = NULL;
@@ -91,5 +97,7 @@ int main(int argc, char const *argv[])
 	free_matrix(M,NumberNodes);
 	//R
 	free(R);
+	//notUsedNode
+	free(notUsedNode);
 	return 0;
 }

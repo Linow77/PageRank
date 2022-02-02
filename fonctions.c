@@ -5,9 +5,95 @@
 
 #include "fonctions.h"
 
-#define MAX_LENGTH 100
+int format_data_file(char* fileName, int* notUsedNode, int* NumberNodes){
 
-Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
+	//Get data from file and transfer them to Nodes
+	FILE* file = NULL;
+	char string[MAX_LENGTH] = "";
+	char delimiter[] = " \t";
+	char* part1 = "";
+	char* part2 = "";
+	int node1;
+	int node2;
+	int previousNode = -1;
+	int nodeCount = 0;
+
+	//adding .txt to fileName
+	char data[strlen(fileName)+4];
+	strcpy(data,fileName);
+	strcat(data,".txt");
+
+	//open file in reading mode
+	file = fopen(data, "r");
+
+	//check for any error while opening file
+	if(!file){
+		printf("%s\n","Impossible d'ouvrir le fichier" );
+	}
+
+	/** Check if somes Node are not used in order to get a clean Nodes Table**/
+	int nbUsedNode = 5000;
+	int lastnbUsedNode = nbUsedNode;
+	int * usedNodes = (int*) malloc(sizeof(int)*nbUsedNode);
+	//init usedNodes to all 
+	for (int i = 0; i < nbUsedNode; ++i)
+	{
+		usedNodes[i]=0;
+	}
+	//get the first line of the file
+	while (fgets(string,MAX_LENGTH,file) != NULL){
+		//get the two nodes of the lines
+		part1 = strtok(string,delimiter);
+		part2 = strtok(NULL,delimiter);
+
+		//convert string into int
+		node1 = atoi(part1);
+		node2 = atoi(part2);
+
+		//Check if node1 or node2 is bigger than nbUsedNode
+		if (node1 >= nbUsedNode || node2 >= nbUsedNode){
+			//realloc tab
+			lastnbUsedNode= nbUsedNode;
+			if(node1>=node2){
+				nbUsedNode = node1+1;
+			}else {
+				nbUsedNode = node2+1;
+			}
+
+			usedNodes = (int*) realloc(usedNodes,sizeof(int)*nbUsedNode);
+			for (int i = lastnbUsedNode; i < nbUsedNode; ++i)
+			{
+				usedNodes[i] = 0;
+			}
+		}
+		usedNodes[node1] = -1;
+		usedNodes[node2] = -1;
+	}
+
+	//Keep the nodes that are not used
+	int nbNotUsed = ADDITIONAL_NODE;
+	int notUsedcount = 0;
+	for (int i = 0; i < nbUsedNode; ++i)
+	{
+		if(usedNodes[i]==0){
+			//check if notUsed tab is not full
+			if(notUsedcount==nbNotUsed){
+				//realloc
+				nbNotUsed=+ADDITIONAL_NODE;
+				notUsedNode = (int*) realloc(notUsedNode,sizeof(int)*nbNotUsed);
+			}
+			notUsedNode[notUsedcount] = i;
+			notUsedcount++;
+		}
+	}
+
+	*NumberNodes = nbUsedNode-notUsedcount;
+	fclose(file);
+
+	return notUsedcount;
+}
+
+Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName, int* notUsedNode, int notUsedcount){
 	int i;
 
 	//Allocation of Nodes
@@ -28,6 +114,8 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 	char* part2 = "";
 	int node1;
 	int node2;
+	int previousNode = -1;
+	int nodeCount = 0;
 
 	//adding .txt to fileName
 	char data[strlen(fileName)+4];
@@ -43,7 +131,9 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 		return Nodes;
 	}
 
-	//get the first line of the file
+	/** Fill Nodes Table with clean informations **/
+
+
 	while (fgets(string,MAX_LENGTH,file) != NULL){
 		//get the two nodes of the lines
 		part1 = strtok(string,delimiter);
@@ -52,6 +142,24 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 		//convert string into int
 		node1 = atoi(part1);
 		node2 = atoi(part2);
+
+		//Check if node1 or node2 is after not used nodes
+		int node1Decrement = 0;
+		int node2Decrement = 0;
+		for (int i = 0; i < notUsedcount; ++i)
+		{
+			if(node1 > notUsedNode[i]){
+				node1Decrement++;
+			}
+			if(node2 > notUsedNode[i]){
+				node2Decrement++;
+			}
+		}	
+
+
+		//adjust node1 and node2
+		node1 = node1 - node1Decrement;
+		node2 = node2 - node2Decrement;
 
 		//add outputs in node1
 		//check if outputs is full
@@ -71,6 +179,7 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName){
 	return Nodes;
 }
 
+//Matrice N*N
 double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 
 	//Allocation
@@ -89,6 +198,7 @@ double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 			M[i][j]=0;
 		}
 	}
+	printf("UTILISER MATRICE CREUSE\n");
 
 	//For each Nodes
 	for (int i = 0; i < NumberNodes; i++)
@@ -102,6 +212,9 @@ double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 	
 	return M;
 }
+
+//Use Sparse Matrix properties
+
 
 double* init_vector(double* R, int NumberNodes){
 	R = (double*) malloc(sizeof(double)* NumberNodes);

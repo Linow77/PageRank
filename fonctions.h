@@ -6,15 +6,20 @@
 typedef struct Node Node;
 struct Node 
 {
+	int value;
 	int outputsNumber; 
 	int maxOutputs;	//default value of 25
 	int* outputs;
 };
 
+//VARIABLES 
+#define MAX_LENGTH 100
+#define ADDITIONAL_NODE 100
 
 /** PROTOTYPES **/
 //functions
-Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName);
+int format_data_file(char* fileName,int* notUsedNode, int* NumberNodes);
+Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName, int* notUsedNode, int nbNotUsed);
 double** init_matrice(double** M, int NumberNodes, Node* Nodes);
 double* init_vector(double* R, int NumberNodes);
 int calculate_vector(double** M,double* R,int NumberNodes, double dampingFactor, float epsilon);
