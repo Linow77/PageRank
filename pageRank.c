@@ -29,6 +29,7 @@ int main(int argc, char const *argv[])
 
 	printf("Damping Factor:%.2f, Epsilon:%.10f, Itérations:%d\n",dampingFactor,epsilon,nbIteration);
 
+	/** FORMAT **/
 	printf("%s\n","Lecture des données et formatage");
 	int* notUsedNode = NULL;
 	notUsedNode = (int*) malloc(sizeof(int)* ADDITIONAL_NODE);
@@ -36,14 +37,18 @@ int main(int argc, char const *argv[])
 	int NumberNodes = 0;
 
 	notUsedcount = format_data_file(fileName,notUsedNode,&NumberNodes);
+
+	/** CREATION OF GRAPH **/
 	printf("%s\n","Lecture des données et création du graphe");
 	Node* Nodes = NULL;
 	Nodes = init_nodes(Nodes,NumberNodes,fileName,notUsedNode,notUsedcount);
 
+	/** CREATION OF 2D ADJACENCY MATRIX M **/
 	// printf("%s\n","Création de la matrice M");
 	// double** M = NULL;
-	// M = init_matrice(M, NumberNodes, Nodes);
+	// M = init_matrix(M, NumberNodes, Nodes);
 
+	/** CREATION OF 1D ADJACENCY MATRIX M USING LINKS **/
 	printf("%s\n","Création de la matrice creuse");
 	//sparseLink is a Tab with 3 variables
 	int nbValue = NumberNodes;
@@ -58,6 +63,7 @@ int main(int argc, char const *argv[])
 
 	sparseM = init_sparse_matrix(sparseM, &nbValue, NumberNodes, Nodes);
 
+	/** CREATION OF VECTOR R **/
 	printf("%s\n", "Création du vecteur de probabilité R");
 	double* R = NULL;
 	R = init_vector(R, NumberNodes);
@@ -69,6 +75,7 @@ int main(int argc, char const *argv[])
 	double time_spent = 0;
 	int i, finished;
 
+	/** CALCUL OF VECTOR R AND TIME THE RESOLUTION WITH MATRIX 2D M**/
 	// printf("%s\n", "Calcul du vecteur de probabilité R via matrice M");
 
 	// i = 0, finished=0;
@@ -83,8 +90,9 @@ int main(int argc, char const *argv[])
 	// end = clock();
 	// time_spent = 0;
 	// time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
- 	// printf( "matrix :Finished in %.10f sec\n", time_spent );
+ 	// printf( "Matrix 2D : Finished in %.10f sec\n", time_spent );
 
+ 	/** CALCUL OF VECTOR R AND TIME THE RESOLUTION WITH MATRIX 1D sparseM**/
     printf("%s\n", "Calcul du vecteur de probabilité R via matrice creuse sparseM");
 
 	i = 0, finished=0;
@@ -99,8 +107,9 @@ int main(int argc, char const *argv[])
 	end = clock();
 	time_spent = 0;
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
-    printf( "sparseMatrix :Finished in %.10f sec\n", time_spent );
+    printf( "Matrix 1D :Finished in %.10f sec\n", time_spent );
 
+    /** SAVE RESULTS IN FILE **/
 	printf("%s\n", "Sauvegarde des résultats dans le fichier de sortie");
 	
 	//Save the results in file
@@ -133,11 +142,14 @@ int main(int argc, char const *argv[])
 
 	printf("%s%s\n","Les résultats sont dans le fichier: ",resultsFileName );
 
-	//free
-	//nodes
+	/** FREE TABLE **/
+	//Nodes
 	free_nodes(Nodes,NumberNodes);
 	//M
 	// free_matrix(M,NumberNodes);
+	//sparseM
+	free(sparseM);
+
 	//R
 	free(R);
 	//notUsedNode

@@ -5,6 +5,7 @@
 
 #include "fonctions.h"
 
+//Format the data file if needed
 int format_data_file(char* fileName, int* notUsedNode, int* NumberNodes){
 
 	//Get data from file and transfer them to Nodes
@@ -93,6 +94,7 @@ int format_data_file(char* fileName, int* notUsedNode, int* NumberNodes){
 	return notUsedcount;
 }
 
+//Create the Graph with Node struct
 Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName, int* notUsedNode, int notUsedcount){
 	int i;
 
@@ -179,8 +181,8 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName, int* notUsedNode,
 	return Nodes;
 }
 
-//Matrice N*N
-double** init_matrice(double** M, int NumberNodes, Node* Nodes){
+//2D MATRIX N*N
+double** init_matrix(double** M, int NumberNodes, Node* Nodes){
 
 	//Allocation
 	M = (double**) malloc(sizeof(double*)*NumberNodes);
@@ -212,7 +214,7 @@ double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 	return M;
 }
 
-//Use Sparse Matrix properties
+//Use Sparse Matrix properties to store Matrix in 1D with sparseLink struct
 sparseLink* init_sparse_matrix(sparseLink* sparseM, int* nbValue, int NumberNodes,Node* Nodes){
 
 	//sparseM size is equal to the number of value in the matrix which are not equal to 0
@@ -254,7 +256,7 @@ sparseLink* init_sparse_matrix(sparseLink* sparseM, int* nbValue, int NumberNode
 	return sparseM;
 }
 
-
+//Init Vector R with 1/NumberNodes for each parameters
 double* init_vector(double* R, int NumberNodes){
 	R = (double*) malloc(sizeof(double)* NumberNodes);
 
@@ -267,6 +269,7 @@ double* init_vector(double* R, int NumberNodes){
 	return R;
 }
 
+//Calculate R with M matrix 2D
 int calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor, float epsilon){
 
 	/** Power method **/
@@ -319,6 +322,7 @@ int calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor, 
 	return finished;
 }
 
+//Calculate R with M matrix 1D
 int calculate_vector2(sparseLink* sparseM, double* R, int nbValue,int NumberNodes,double dampingFactor, float epsilon){
 
 	/** Power method **/
@@ -372,6 +376,62 @@ int calculate_vector2(sparseLink* sparseM, double* R, int nbValue,int NumberNode
 	return finished;
 }
 
+//Calculate MR with M matrix 2D
+double* calculate_matrix_vector(double** Matrix, double* Vector, int NumberNodes){
+
+	double* Result= NULL;
+	Result = (double*) malloc(sizeof(double)*NumberNodes);
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		Result[i]=0;
+
+		for (int j = 0; j < NumberNodes; j++)
+		{
+			Result[i]+= Matrix[i][j]*Vector[j];			
+		}
+	}
+
+	return Result;
+}
+
+//Calculate MR with M matrix 1D
+double* calculate_matrix_vector2(sparseLink* sparseM, double* Vector, int nbValue, int NumberNodes){
+
+	double* Result= NULL;
+	Result = (double*) malloc(sizeof(double)*NumberNodes);
+
+	for (int i = 0; i < NumberNodes; ++i)
+	{
+		Result[i] = 0;
+	}
+
+	for (int i = 0; i < nbValue; ++i)
+	{
+		Result[sparseM[i].line] +=  sparseM[i].value*Vector[sparseM[i].column];
+	}
+
+	return Result;
+}
+
+//Addition vector1 and Vector2
+void addition_vector(double* Vector1, double* Vector2, int NumberNodes){
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		Vector1[i] = Vector1[i] + Vector2[i];
+	}
+}
+
+//Calculate Vector* Number
+void calculate_vector_number(double* Vector, double Number, int NumberNodes){
+	
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		Vector[i] = Vector[i]*Number;
+	}
+}
+
 //Utils
 void print_outputs(Node* Nodes, int NumberNodes){
 
@@ -406,60 +466,7 @@ void print_Vector(double* R, int NumberOfLine){
 	}
 }
 
-double* calculate_matrix_vector(double** Matrix, double* Vector, int NumberNodes){
-
-	double* Result= NULL;
-	Result = (double*) malloc(sizeof(double)*NumberNodes);
-
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		Result[i]=0;
-
-		for (int j = 0; j < NumberNodes; j++)
-		{
-			Result[i]+= Matrix[i][j]*Vector[j];			
-		}
-	}
-
-	return Result;
-}
-
-double* calculate_matrix_vector2(sparseLink* sparseM, double* Vector, int nbValue, int NumberNodes){
-
-	double* Result= NULL;
-	Result = (double*) malloc(sizeof(double)*NumberNodes);
-
-	for (int i = 0; i < NumberNodes; ++i)
-	{
-		Result[i] = 0;
-	}
-
-	for (int i = 0; i < nbValue; ++i)
-	{
-		Result[sparseM[i].line] +=  sparseM[i].value*Vector[sparseM[i].column];
-	}
-
-	return Result;
-}
-
-void addition_vector(double* Vector1, double* Vector2, int NumberNodes){
-
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		Vector1[i] = Vector1[i] + Vector2[i];
-	}
-}
-
-void calculate_vector_number(double* Vector, double Number, int NumberNodes){
-	
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		Vector[i] = Vector[i]*Number;
-	}
-
-}
-
-//free functions
+//Free functions
 void free_nodes(Node* Nodes, int NumberNodes){
 	for (int i = 0; i < NumberNodes; i++)
 	{
