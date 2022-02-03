@@ -198,7 +198,6 @@ double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 			M[i][j]=0;
 		}
 	}
-	printf("UTILISER MATRICE CREUSE\n");
 
 	//For each Nodes
 	for (int i = 0; i < NumberNodes; i++)
@@ -214,6 +213,46 @@ double** init_matrice(double** M, int NumberNodes, Node* Nodes){
 }
 
 //Use Sparse Matrix properties
+sparseLink* init_sparse_matrix(sparseLink* sparseM, int* nbValue, int NumberNodes,Node* Nodes){
+
+	//sparseM size is equal to the number of value in the matrix which are not equal to 0
+	int actualValue = 0;
+	int lastValue = 0;
+
+
+	//For each Nodes
+	for (int i = 0; i < NumberNodes; i++)
+	{
+
+		//Examine each outputs
+		for (int j = 0; j < Nodes[i].outputsNumber; j++)
+		{
+			//Check if matrix is full
+			if(actualValue == *nbValue){
+				//realloc
+				lastValue = *nbValue;
+				*nbValue = *nbValue + NumberNodes;
+				sparseM = (sparseLink*) realloc(sparseM,sizeof(sparseLink)*(*nbValue));
+
+				for (int i = lastValue; i < *nbValue; ++i)
+				{
+					sparseM[i].value = 0;
+					sparseM[i].line = -1;
+					sparseM[i].column = -1;
+				}
+
+			}
+
+			sparseM[actualValue].value = 1.0/Nodes[i].outputsNumber;
+			sparseM[actualValue].line = Nodes[i].outputs[j];
+			sparseM[actualValue].column = i;
+
+			actualValue++;
+		}
+	}
+
+	return sparseM;
+}
 
 
 double* init_vector(double* R, int NumberNodes){
@@ -280,6 +319,58 @@ int calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor, 
 	return finished;
 }
 
+int calculate_vector2(sparseLink* sparseM, double* R, int nbValue,int NumberNodes,double dampingFactor, float epsilon){
+
+	/** Power method **/
+	//R = P1 + P2
+	//R = dMR + ((1-d)/N)V1 	where d is the damping factor
+
+	//Calculate P1 = dMR
+	double* P1 = NULL;
+	//P1=MR
+	P1 = calculate_matrix_vector2(sparseM,R, nbValue,NumberNodes);
+
+	//P1=dMR
+	calculate_vector_number(P1,dampingFactor,NumberNodes);
+
+	//Calculate P2 = ((1-d)/N)V1 = p3V1
+	//V1 is the vector with only ones so P2 is the vector with only p3
+
+	double p3= (double)(1.0-dampingFactor)/(double)NumberNodes;
+
+	double* P2 = NULL;
+	P2 = (double*) malloc(sizeof(double)*NumberNodes);
+
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		P2[i] = p3;
+	}	
+
+	//Calculate Result
+	addition_vector(P1,P2,NumberNodes);
+
+	//Check if precision epsilon is good
+	int finished = 1;
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		//If one component of the vector is not precised enough, continue to iterate
+		if(fabs(P1[i]-R[i]) > (double)epsilon){
+			finished = 0;
+		}
+	}
+
+	//Store result in R
+	for (int i = 0; i < NumberNodes; i++)
+	{
+		R[i]= P1[i];
+	}
+
+	//free temp
+	free(P1);
+	free(P2);
+
+	return finished;
+}
 
 //Utils
 void print_outputs(Node* Nodes, int NumberNodes){
@@ -328,6 +419,24 @@ double* calculate_matrix_vector(double** Matrix, double* Vector, int NumberNodes
 		{
 			Result[i]+= Matrix[i][j]*Vector[j];			
 		}
+	}
+
+	return Result;
+}
+
+double* calculate_matrix_vector2(sparseLink* sparseM, double* Vector, int nbValue, int NumberNodes){
+
+	double* Result= NULL;
+	Result = (double*) malloc(sizeof(double)*NumberNodes);
+
+	for (int i = 0; i < NumberNodes; ++i)
+	{
+		Result[i] = 0;
+	}
+
+	for (int i = 0; i < nbValue; ++i)
+	{
+		Result[sparseM[i].line] +=  sparseM[i].value*Vector[sparseM[i].column];
 	}
 
 	return Result;

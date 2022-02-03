@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "fonctions.h"
 
@@ -26,7 +27,7 @@ int main(int argc, char const *argv[])
 	float epsilon = atof(argv[3]);
 	int nbIteration = atoi(argv[4]);
 
-	printf("Damping Factor:%.2f, Epsilon:%.5f, Itérations:%d\n",dampingFactor,epsilon,nbIteration);
+	printf("Damping Factor:%.2f, Epsilon:%.10f, Itérations:%d\n",dampingFactor,epsilon,nbIteration);
 
 	printf("%s\n","Lecture des données et formatage");
 	int* notUsedNode = NULL;
@@ -39,9 +40,23 @@ int main(int argc, char const *argv[])
 	Node* Nodes = NULL;
 	Nodes = init_nodes(Nodes,NumberNodes,fileName,notUsedNode,notUsedcount);
 
-	printf("%s\n","Création de la matrice M");
-	double** M = NULL;
-	M = init_matrice(M, NumberNodes, Nodes);
+	// printf("%s\n","Création de la matrice M");
+	// double** M = NULL;
+	// M = init_matrice(M, NumberNodes, Nodes);
+
+	printf("%s\n","Création de la matrice creuse");
+	//sparseLink is a Tab with 3 variables
+	int nbValue = NumberNodes;
+
+	sparseLink* sparseM = (sparseLink*) malloc(sizeof(sparseLink)*nbValue);
+	for (int i = 0; i < nbValue; ++i)
+	{
+		sparseM[i].value = 0;
+		sparseM[i].line = -1;
+		sparseM[i].column = -1;
+	}
+
+	sparseM = init_sparse_matrix(sparseM, &nbValue, NumberNodes, Nodes);
 
 	printf("%s\n", "Création du vecteur de probabilité R");
 	double* R = NULL;
@@ -49,14 +64,42 @@ int main(int argc, char const *argv[])
 
 	//print_Vector(R,NumberNodes);
 
-	printf("%s\n", "Calcul du vecteur de probabilité R");
+	clock_t  begin;
+	clock_t  end;
+	double time_spent = 0;
+	int i, finished;
 
-	int i = 0, finished=0;
+	// printf("%s\n", "Calcul du vecteur de probabilité R via matrice M");
+
+	// i = 0, finished=0;
+
+	// begin = clock();
+
+	// while( i< nbIteration && finished == 0){
+	// 	finished = calculate_vector(M,R,NumberNodes,dampingFactor, epsilon);
+	// 	i+=1;
+	// }
+
+	// end = clock();
+	// time_spent = 0;
+	// time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+ 	// printf( "matrix :Finished in %.10f sec\n", time_spent );
+
+    printf("%s\n", "Calcul du vecteur de probabilité R via matrice creuse sparseM");
+
+	i = 0, finished=0;
+
+	begin = clock();
 
 	while( i< nbIteration && finished == 0){
-		finished = calculate_vector(M,R,NumberNodes,dampingFactor, epsilon);
+		finished = calculate_vector2(sparseM,R,nbValue,NumberNodes,dampingFactor, epsilon);
 		i+=1;
 	}
+
+	end = clock();
+	time_spent = 0;
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+    printf( "sparseMatrix :Finished in %.10f sec\n", time_spent );
 
 	printf("%s\n", "Sauvegarde des résultats dans le fichier de sortie");
 	
@@ -94,7 +137,7 @@ int main(int argc, char const *argv[])
 	//nodes
 	free_nodes(Nodes,NumberNodes);
 	//M
-	free_matrix(M,NumberNodes);
+	// free_matrix(M,NumberNodes);
 	//R
 	free(R);
 	//notUsedNode

@@ -1,7 +1,7 @@
 # PageRank
 ## Execution de l'algorithme
 Pour executer l'algorithme, utiliser la commande "make" pour créer l'executable.
-Puis utiliser l'executable comme suit : ./executable nom_du_fichier_txt nombre_de_noeuds damping_factor itérations
+Puis utiliser l'executable comme suit : ./executable nom_du_fichier_txt damping_factor epsilon itérations
 En cas d'erreur, une aide vous est proposé et explique la bonne utilisation de l'executable.
 
 ## Fichiers du code
@@ -16,7 +16,8 @@ Pour générer le graphe, j'ai créé une structure Node, qui stocke les liens s
 Dans l'execution du programme, on récupère le nombre de noeuds, le damping factor, ainsi que le nombre d'itérations.
 Voici les grandes étapes du programme :
 1) Récupération des arguments
-2) Lecture du fichier txt et création du graphe (tableau de Node)
-3) Création de la matrice M et du vecteur propre R
-4) Calcul du vecteur propre R selon le nombre d'itérations
-5) Sauvegarde du résultats dans le fichier txt de sortie
+2) Lecture du fichier et formatage de celui ci
+3) Lecture du fichier txt et création du graphe (tableau de Node)
+4) Création de la matrice M et du vecteur propre R
+5) Calcul du vecteur propre R selon le nombre d'itérations
+6) Sauvegarde du résultats dans le fichier txt de sortie
