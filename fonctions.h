@@ -22,6 +22,7 @@ struct sparseLink
 //VARIABLES 
 #define MAX_LENGTH 100
 #define ADDITIONAL_NODE 100
+#define MIN_NUMBER_NODE 1000
 
 /** PROTOTYPES **/
 //functions

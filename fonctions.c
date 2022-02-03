@@ -33,7 +33,7 @@ int format_data_file(char* fileName, int* notUsedNode, int* NumberNodes){
 	}
 
 	/** Check if somes Node are not used in order to get a clean Nodes Table**/
-	int nbUsedNode = 5000;
+	int nbUsedNode = MIN_NUMBER_NODE;
 	int lastnbUsedNode = nbUsedNode;
 	int * usedNodes = (int*) malloc(sizeof(int)*nbUsedNode);
 	//init usedNodes to all 
@@ -89,6 +89,8 @@ int format_data_file(char* fileName, int* notUsedNode, int* NumberNodes){
 	}
 
 	*NumberNodes = nbUsedNode-notUsedcount;
+	//realloc tab to the correct number
+	usedNodes = (int*) realloc(usedNodes,sizeof(int)*(*NumberNodes));
 	fclose(file);
 
 	return notUsedcount;
