@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 	//Check Variables
 	if(argc < 5){
 		printf("%s","You need to specify :\n1)Name of the data file (without .txt)\n2)Value of the damping factor\n3)Value of Epsilon\n4)Number of iterions for the algorithm\n");
-		printf("%s\n","Example : ./executable test 0.85 0.0001 10" );
+		printf("%s\n","Example : ./executable data/test 0.85 0.0001 10" );
 		return 0;
 	}
 

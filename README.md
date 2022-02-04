@@ -1,7 +1,7 @@
 # PageRank
 ## Execution de l'algorithme
 Pour executer l'algorithme, utiliser la commande "make" pour créer l'executable.
-Puis utiliser l'executable comme suit : ./executable nom_du_fichier_txt damping_factor epsilon itérations
+Puis utiliser l'executable comme suit : ./executable data/nom_du_fichier_txt damping_factor epsilon itérations
 En cas d'erreur, une aide vous est proposé et explique la bonne utilisation de l'executable.
 **Si vous voulez utiliser les jeux de données de test, il faut redéfinir MIN_NUMBER_NODE=1 dans fonction.h**
 
