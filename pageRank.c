@@ -1,9 +1,3 @@
-/** Tests
- * email-Eu-core 1005 Nodes
- * test 4 nodes
- * test2 3 nodes
- **/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,11 +37,6 @@ int main(int argc, char const *argv[])
 	Node* Nodes = NULL;
 	Nodes = init_nodes(Nodes,NumberNodes,fileName,notUsedNode,notUsedcount);
 
-	/** CREATION OF 2D ADJACENCY MATRIX M **/
-	// printf("%s\n","Création de la matrice M");
-	// double** M = NULL;
-	// M = init_matrix(M, NumberNodes, Nodes);
-
 	/** CREATION OF 1D ADJACENCY MATRIX M USING LINKS **/
 	printf("%s\n","Création de la matrice creuse");
 	//sparseLink is a Tab with 3 variables
@@ -68,29 +57,10 @@ int main(int argc, char const *argv[])
 	double* R = NULL;
 	R = init_vector(R, NumberNodes);
 
-	//print_Vector(R,NumberNodes);
-
 	clock_t  begin;
 	clock_t  end;
 	double time_spent = 0;
 	int i, finished;
-
-	/** CALCUL OF VECTOR R AND TIME THE RESOLUTION WITH MATRIX 2D M**/
-	// printf("%s\n", "Calcul du vecteur de probabilité R via matrice M");
-
-	// i = 0, finished=0;
-
-	// begin = clock();
-
-	// while( i< nbIteration && finished == 0){
-	// 	finished = calculate_vector(M,R,NumberNodes,dampingFactor, epsilon);
-	// 	i+=1;
-	// }
-
-	// end = clock();
-	// time_spent = 0;
-	// time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
- 	// printf( "Matrix 2D : Finished in %.10f sec\n", time_spent );
 
  	/** CALCUL OF VECTOR R AND TIME THE RESOLUTION WITH MATRIX 1D sparseM**/
     printf("%s\n", "Calcul du vecteur de probabilité R via matrice creuse sparseM");
@@ -100,7 +70,7 @@ int main(int argc, char const *argv[])
 	begin = clock();
 
 	while( i< nbIteration && finished == 0){
-		finished = calculate_vector2(sparseM,R,nbValue,NumberNodes,dampingFactor, epsilon);
+		finished = calculate_vector(sparseM,R,nbValue,NumberNodes,dampingFactor, epsilon);
 		i+=1;
 	}
 
@@ -108,6 +78,11 @@ int main(int argc, char const *argv[])
 	time_spent = 0;
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     printf( "Matrix 1D :Finished in %.10f sec\n", time_spent );
+
+    printf("%s\n", "Addition des composantes du vecteur propre");
+
+    double test = addition_result(R,NumberNodes);
+    printf("%s%.10f\n","Total = ", test);
 
     /** SAVE RESULTS IN FILE **/
 	printf("%s\n", "Sauvegarde des résultats dans le fichier de sortie");
@@ -146,7 +121,6 @@ int main(int argc, char const *argv[])
 	//Nodes
 	free_nodes(Nodes,NumberNodes);
 	//M
-	// free_matrix(M,NumberNodes);
 	//sparseM
 	free(sparseM);
 

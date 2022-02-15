@@ -21,8 +21,6 @@ Pour gérer la matrice creuse avec un tableau 1D, j'ai utilisé une structure pe
 - line : position dans la matrice creuse (ligne)
 - column : position dans la matrice creuse (colonne)
 
-De base, seul le calcul via la matrice 1D creuse est effectuée. Vous pouvez activer le calcul du code via la matrice 2D en décommentant les fonctions appelées dans pageRank.c
-
 Dans l'execution du programme, on récupère le nombre de noeuds, le damping factor, ainsi que le nombre d'itérations.
 Voici les grandes étapes du programme :
 1) Récupération des arguments

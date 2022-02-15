@@ -183,39 +183,6 @@ Node* init_nodes(Node* Nodes, int NumberNodes, char* fileName, int* notUsedNode,
 	return Nodes;
 }
 
-//2D MATRIX N*N
-double** init_matrix(double** M, int NumberNodes, Node* Nodes){
-
-	//Allocation
-	M = (double**) malloc(sizeof(double*)*NumberNodes);
-
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		M[i]= (double*) malloc(sizeof(double)*NumberNodes);
-	}
-
-	//Init M at 0
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		for (int j = 0; j < NumberNodes; j++)
-		{
-			M[i][j]=0;
-		}
-	}
-
-	//For each Nodes
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		//Examine each outputs
-		for (int j = 0; j < Nodes[i].outputsNumber; j++)
-		{
-			M[Nodes[i].outputs[j]][i]=1.0/(Nodes[i].outputsNumber);
-		}
-	}
-	
-	return M;
-}
-
 //Use Sparse Matrix properties to store Matrix in 1D with sparseLink struct
 sparseLink* init_sparse_matrix(sparseLink* sparseM, int* nbValue, int NumberNodes,Node* Nodes){
 
@@ -271,61 +238,8 @@ double* init_vector(double* R, int NumberNodes){
 	return R;
 }
 
-//Calculate R with M matrix 2D
-int calculate_vector(double** M,double* R,int NumberNodes,double dampingFactor, float epsilon){
-
-	/** Power method **/
-	//R = P1 + P2
-	//R = dMR + ((1-d)/N)V1 	where d is the damping factor
-
-	//Calculate P1 = dMR
-	double* P1 = NULL;
-	//P1=MR
-	P1 = calculate_matrix_vector(M,R, NumberNodes);
-	//P1=dMR
-	calculate_vector_number(P1,dampingFactor,NumberNodes);
-
-	//Calculate P2 = ((1-d)/N)V1 = p3V1
-	//V1 is the vector with only ones so P2 is the vector with only p3
-
-	double p3= (double)(1.0-dampingFactor)/(double)NumberNodes;
-
-	double* P2 = NULL;
-	P2 = (double*) malloc(sizeof(double)*NumberNodes);
-
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		P2[i] = p3;
-	}	
-
-	//Calculate Result
-	addition_vector(P1,P2,NumberNodes);
-
-	//Check if precision epsilon is good
-	int finished = 1;
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		//If one component of the vector is not precised enough, continue to iterate
-		if(fabs(P1[i]-R[i]) > (double)epsilon){
-			finished = 0;
-		}
-	}
-
-	//Store result in R
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		R[i]= P1[i];
-	}
-
-	//free temp
-	free(P1);
-	free(P2);
-
-	return finished;
-}
-
 //Calculate R with M matrix 1D
-int calculate_vector2(sparseLink* sparseM, double* R, int nbValue,int NumberNodes,double dampingFactor, float epsilon){
+int calculate_vector(sparseLink* sparseM, double* R, int nbValue,int NumberNodes,double dampingFactor, float epsilon){
 
 	/** Power method **/
 	//R = P1 + P2
@@ -334,7 +248,7 @@ int calculate_vector2(sparseLink* sparseM, double* R, int nbValue,int NumberNode
 	//Calculate P1 = dMR
 	double* P1 = NULL;
 	//P1=MR
-	P1 = calculate_matrix_vector2(sparseM,R, nbValue,NumberNodes);
+	P1 = calculate_matrix_vector(sparseM,R, nbValue,NumberNodes);
 
 	//P1=dMR
 	calculate_vector_number(P1,dampingFactor,NumberNodes);
@@ -378,27 +292,18 @@ int calculate_vector2(sparseLink* sparseM, double* R, int nbValue,int NumberNode
 	return finished;
 }
 
-//Calculate MR with M matrix 2D
-double* calculate_matrix_vector(double** Matrix, double* Vector, int NumberNodes){
+//Calculate dM with M matric 1D
+void calculate_matrix_number(sparseLink* sparseM, int nbValue, double dampingFactor){
 
-	double* Result= NULL;
-	Result = (double*) malloc(sizeof(double)*NumberNodes);
-
-	for (int i = 0; i < NumberNodes; i++)
+	for (int i = 0; i < nbValue; ++i)
 	{
-		Result[i]=0;
-
-		for (int j = 0; j < NumberNodes; j++)
-		{
-			Result[i]+= Matrix[i][j]*Vector[j];			
-		}
+		sparseM[i].value = dampingFactor * sparseM[i].value;
 	}
 
-	return Result;
 }
 
 //Calculate MR with M matrix 1D
-double* calculate_matrix_vector2(sparseLink* sparseM, double* Vector, int nbValue, int NumberNodes){
+double* calculate_matrix_vector(sparseLink* sparseM, double* Vector, int nbValue, int NumberNodes){
 
 	double* Result= NULL;
 	Result = (double*) malloc(sizeof(double)*NumberNodes);
@@ -434,6 +339,18 @@ void calculate_vector_number(double* Vector, double Number, int NumberNodes){
 	}
 }
 
+double addition_result(double* Vector, int NumberNodes){
+
+	double result = 0.0;
+
+	for (int i = 0; i < NumberNodes; ++i)
+	{
+		result += Vector[i];
+	}
+
+	return result;
+}
+
 //Utils
 void print_outputs(Node* Nodes, int NumberNodes){
 
@@ -444,17 +361,6 @@ void print_outputs(Node* Nodes, int NumberNodes){
 		for (int j = 0; j < Nodes[i].outputsNumber; j++)
 		{
 			printf("%d | ",Nodes[i].outputs[j] );
-		}
-		printf("\n");
-	}
-}
-
-void print_matrice(double** M, int NumberNodes){
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		for (int j = 0; j < NumberNodes; j++)
-		{
-			printf("%.3f | ",M[i][j] );
 		}
 		printf("\n");
 	}
@@ -477,13 +383,4 @@ void free_nodes(Node* Nodes, int NumberNodes){
 	}
 	free(Nodes);
 
-}
-
-void free_matrix(double** M, int NumberNodes){
-
-	for (int i = 0; i < NumberNodes; i++)
-	{
-		free(M[i]);
-	}
-	free(M);
 }
