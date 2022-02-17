@@ -63,7 +63,7 @@ int main(int argc, char const *argv[])
 	int i, finished;
 
  	/** CALCUL OF VECTOR R AND TIME THE RESOLUTION WITH MATRIX 1D sparseM**/
-    printf("%s\n", "Calcul du vecteur de probabilité R via matrice creuse sparseM");
+    printf("%s\n", "Calcul du vecteur de probabilité R via matrice creuse");
 
 	i = 0, finished=0;
 
@@ -79,10 +79,16 @@ int main(int argc, char const *argv[])
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     printf( "Matrix 1D :Finished in %.10f sec\n", time_spent );
 
-    printf("%s\n", "Addition des composantes du vecteur propre");
+    printf("%s\n", "Addition des composantes du vecteur propre et calcul de la marge d'erreur");
 
-    double test = addition_result(R,NumberNodes);
-    printf("%s%.10f\n","Total = ", test);
+    double totalResult = addition_result(R,NumberNodes);
+    double error = 1.0-totalResult;
+    if(error <0){
+    	error = -error;
+    }
+    // printf("%s%.10f\n","Total = ", totalResult);
+    // printf("%s%.10f\n","error = ", error);
+
 
     /** SAVE RESULTS IN FILE **/
 	printf("%s\n", "Sauvegarde des résultats dans le fichier de sortie");
@@ -110,6 +116,10 @@ int main(int argc, char const *argv[])
 		fputs("\n",resultFile);
 
 	}
+	sprintf(temp,"%.10f",error);
+	fputs("Marge d'erreur : ",resultFile);
+	fputs(temp,resultFile);
+	fputs("\n",resultFile);
 
 	fclose(resultFile);
 
